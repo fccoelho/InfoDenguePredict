@@ -10,18 +10,11 @@ from sqlalchemy import create_engine
 from decouple import config
 import pickle
 
-DEBUG=False
-
-PSQL_HOST="localhost"
-PSQL_DB="dengue_ro" 
-PSQL_USER="dengue_ro" 
-PSQL_PASSWORD=r"Dnw?)2g[ZwUfBLVk%Vv3"
-
 db_engine = create_engine("postgresql://{}:{}@{}/{}".format(
-    PSQL_USER,
-    PSQL_PASSWORD,
-    PSQL_HOST,
-    PSQL_DB
+    config('PSQL_USER'),
+    config('PSQL_PASSWORD'),
+    config('PSQL_HOST'),
+    config('PSQL_DB')
 ))
 
 
@@ -36,10 +29,10 @@ def get_alerta_table(municipio=None, state=None):
     estados = {'RJ': 'Rio de Janeiro', 'ES': 'Espírito Santo', 'PR': 'Paraná'}
     if state in estados:
         state = estados[state]
-    conexao = create_engine("postgresql://{}:{}@{}/{}".format(PSQL_USER,
-                                                              PSQL_PASSWORD,
-                                                              PSQL_HOST,
-                                                              PSQL_DB))
+    conexao = create_engine("postgresql://{}:{}@{}/{}".format(config('PSQL_USER'),
+                                                              config('PSQL_PASSWORD'),
+                                                              config('PSQL_HOST'),
+                                                              config('PSQL_DB')))
     if municipio is None:
         sql = 'select h.* from "Municipio"."Historico_alerta" h JOIN "Dengue_global"."Municipio" m ON h.municipio_geocodigo=m.geocodigo where m.uf=\'{}\';'.format(
             state)
@@ -71,10 +64,10 @@ def get_temperature_data(municipio=None):
     :param municipio: geocode of the city
     :return: pandas dataframe
     """
-    conexao = create_engine("postgresql://{}:{}@{}/{}".format(PSQL_USER,
-                                                              PSQL_PASSWORD,
-                                                              PSQL_HOST,
-                                                              PSQL_DB))
+    conexao = create_engine("postgresql://{}:{}@{}/{}".format(config('PSQL_USER'),
+                                                              config('PSQL_PASSWORD'),
+                                                              config('PSQL_HOST'),
+                                                              config('PSQL_DB')))
 
     if municipio is None:
         df = pd.read_sql_query('select * from "Municipio"."Clima_wu" ORDER BY "data_dia" ASC;',
@@ -95,10 +88,10 @@ def get_tweet_data(municipio=None) -> pd.DataFrame:
     :param municipio: city geocode.
     :return: pandas dataframe
     """
-    conexao = create_engine("postgresql://{}:{}@{}/{}".format(PSQL_USER,
-                                                              PSQL_PASSWORD,
-                                                              PSQL_HOST,
-                                                              PSQL_DB))
+    conexao = create_engine("postgresql://{}:{}@{}/{}".format(config('PSQL_USER'),
+                                                              config('PSQL_PASSWORD'),
+                                                              config('PSQL_HOST'),
+                                                              config('PSQL_DB')))
     if municipio is None:
         df = pd.read_sql_query('select * from "Municipio"."Tweet" ORDER BY "data_dia" ASC;',
                                conexao, index_col='id')
@@ -120,10 +113,10 @@ def get_rain_data(geocode, sensor="chuva"):
     :param sensor: either "chuva" or "intensidade_precipitaçao"
     :return: pandas dataframe.
     """
-    conexao = create_engine("postgresql://{}:{}@{}/{}".format(PSQL_USER,
-                                                              PSQL_PASSWORD,
-                                                              PSQL_HOST,
-                                                              PSQL_DB))
+    conexao = create_engine("postgresql://{}:{}@{}/{}".format(config('PSQL_USER'),
+                                                              config('PSQL_PASSWORD'),
+                                                              config('PSQL_HOST'),
+                                                              config('PSQL_DB')))
 
     sql = "SELECT * FROM \"Municipio\".\"Clima_cemaden\" WHERE \"Estacao_cemaden_codestacao\" similar to '{}%' and sensor='{}'".format(
         geocode, sensor)
